@@ -13,3 +13,5 @@
 .lsp/
 .portal/
 grafana-data/
+victoriametrics-data/
+prometheus-data/

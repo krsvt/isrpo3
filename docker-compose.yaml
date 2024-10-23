@@ -51,15 +51,15 @@ services:
     container_name: "prometheus"
     networks:
       - my-network
-    # env_file:
-    #   - .env
-    # environment:
-    #   V: "v5"
     ports:
       - 9090:9090
     volumes:
-      # - prometheus-data:/prometheus
+      - ./prometheus-data:/prometheus
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.listen-address=:9090"
 
   grafana:
     image: grafana/grafana:latest
@@ -68,6 +68,17 @@ services:
       - "3000:3000"
     volumes:
       - ./grafana-data:/var/lib/grafana
+    restart: always
+    networks:
+      - my-network
+
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:latest
+    container_name: victoriametrics
+    ports:
+      - "8428:8428"
+    volumes:
+      - ./victoriametrics-data:/victoria-metrics-data
     restart: always
     networks:
       - my-network
