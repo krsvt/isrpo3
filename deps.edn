@@ -15,6 +15,7 @@
         ring/ring-defaults                  {:mvn/version "0.3.4"}
         org.clojure/clojure                 {:mvn/version "1.11.1"}
         ring-cors/ring-cors                 {:mvn/version "0.1.13"}
+        clj-commons/iapetos                 {:mvn/version "0.1.14"}
 
         dev.weavejester/medley {:mvn/version "1.8.0"
                                 :why         "Functions we wish were in Clojure core"

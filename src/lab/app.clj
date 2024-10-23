@@ -1,20 +1,10 @@
 (ns lab.app
   (:require
    [lab.util.postgres :as pg]
-   [clojure.java.io :as io]
    [medley.core :as medley]
-   [clojure.string :as str])
-  ;; (:require
-  ;;  [com.biffweb :as biff :refer [q]]
-  ;;           [com.biffweb.example.postgres.middleware :as mid]
-  ;;           [com.biffweb.example.postgres.ui :as ui]
-  ;;           [com.biffweb.example.postgres.settings :as settings]
-  ;;           [com.biffweb.example.postgres.util.postgres :as util-pg]
-  ;;           [next.jdbc :as jdbc]
-  ;;           [rum.core :as rum]
-  ;;           [ring.adapter.jetty9 :as jetty]
-  ;;           [cheshire.core :as cheshire])
-  )
+   [clojure.string :as str]
+   [iapetos.collector.ring :as ring]
+   [lab.metrics :as metrics]))
 
 (defn camelcase->snakecase [s]
   (-> (name s)
@@ -33,15 +23,19 @@
   (medley/map-keys snakecase->camelcase json))
 
 (defn get-patients [{:keys [biff/ds]}]
+  (metrics/inc-get-patient)
   {:status 200
    :body (mapv map-json-out (pg/patients ds))})
 
-(defn add-patient [{:keys [biff/ds params] :as ctx}]
+(defn add-patient [{:keys [biff/ds params]}]
   (let [params (map-json-in params)
         pat (pg/create-patient ds params)]
     (cond
-      pat {:status 200
-           :body (map-json-out pat)}
+      pat (do
+            (metrics/inc-created-patients)
+            {:status 200
+             :body (map-json-out pat)})
+
       :else {:status 400})))
 
 (defn get-patient [{:keys [biff/ds] :as ctx}]
@@ -49,8 +43,10 @@
         pat (pg/patient-by-id ds id)]
     (cond
       pat
-      {:status 200
-       :body (map-json-out pat)}
+      (do
+        (metrics/inc-get-patient)
+        {:status 200
+       :body (map-json-out pat)})
       :else
       {:status 404})))
 
@@ -75,7 +71,10 @@
       {:status 404})))
 
 (def module
-  {:api-routes [["/api/patient"
+  {:api-routes [["/metrics"
+                 {:get metrics/metrics-handler}]
+
+                ["/api/patient"
                  ["" {:post add-patient
                       :get get-patients}]
 

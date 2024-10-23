@@ -5,15 +5,10 @@
 # e.g. using whatever tools your deployment platform provides for setting environment variables.
 from clojure:temurin-17-tools-deps-bullseye
 
-ENV TAILWIND_VERSION=v3.2.4
-
+RUN apt-get update
 RUN apt-get update && apt-get install -y \
   curl default-jre \
   && rm -rf /var/lib/apt/lists/*
-
-# RUN curl -L -o /usr/local/bin/tailwindcss \
-#   https://github.com/tailwindlabs/tailwindcss/releases/download/$TAILWIND_VERSION/tailwindcss-linux-x64 \
-#   && chmod +x /usr/local/bin/tailwindcss
 
 WORKDIR /app
 COPY src ./src
@@ -22,7 +17,7 @@ COPY resources ./resources
 COPY deps.edn .
 
 RUN clj -M:dev uberjar && cp target/jar/app.jar . && rm -r target
-RUN rm -rf /usr/local/bin/tailwindcss src dev resources deps.edn
+RUN rm -rf src dev resources deps.edn
 
 EXPOSE 8080
 

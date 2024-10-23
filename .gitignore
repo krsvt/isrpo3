@@ -12,3 +12,4 @@
 .clj-kondo/
 .lsp/
 .portal/
+grafana-data/

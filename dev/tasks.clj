@@ -54,7 +54,7 @@
       #_(when (fs/exists? "package.json")
         (shell "npm install"))
       #_(future (run-task "css" "--watch"))
-      (future (start-postgres))
+      ;; (future (start-postgres))
       (spit ".nrepl-port" port)
       ((requiring-resolve (symbol (str main-ns) "-main"))))))
 

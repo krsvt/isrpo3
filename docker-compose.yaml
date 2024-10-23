@@ -44,5 +44,41 @@ services:
     networks:
       - my-network
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: "prometheus"
+    networks:
+      - my-network
+    # env_file:
+    #   - .env
+    # environment:
+    #   V: "v5"
+    ports:
+      - 9090:9090
+    volumes:
+      # - prometheus-data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    # command:
+    #   - "--config.file=/etc/prometheus/prometheus.yml"
+    #   - "--storage.tsdb.path=/prometheus"
+    #   - "--web.enable-lifecycle"
+    #   - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+    #   - "--web.console.templates=/usr/share/prometheus/consoles"
+    # depends_on:
+    #   - pushgateway
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana-data:/var/lib/grafana
+    restart: always
+    networks:
+      - my-network
+
 networks:
   my-network: {}
