@@ -7,11 +7,4 @@ scrape_configs:
       - targets: ["localhost:9090"]
   - job_name: "lab-app"
     static_configs:
-      - targets: ["host.docker.internal:8080"]
-  - job_name: "lab-app2"
-    static_configs:
-      - targets: ["localhost:8080"]
-
-  - job_name: "lab-app3"
-    static_configs:
       - targets: ["app:8080"]
